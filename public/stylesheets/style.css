@@ -1,0 +1,23 @@
+body {
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
+
+.input_field {
+  padding-top:300px;
+  width: 20%
+}
+
+.center {
+    display: inline-block;
+    vertical-align: middle;
+    float: none;
+}
+
+#submit {
+    padding-top:50px;
+}
