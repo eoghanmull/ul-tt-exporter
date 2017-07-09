@@ -1,0 +1,15 @@
+extends layout
+
+block content
+ center
+ div(class="row" style="padding-top:10px")
+    img(id="ulbanner" src="img/ulbanner.png" style="width:100%")
+ div(class="divider")
+ div(class="row" style="padding-top:60px")
+    div(class="col s8" id="quote" ) 
+        h4 The <b>UL Timetable Exporter</b> allows you to automatically export your UL Student timetable into your <b>Google</b> or <b>Outlook</b> calender
+        div(id="landing_btn")
+            button(class="waves-effect waves-light btn btn-large" id="export" style="background-color:#7D0140") <b>Export your timetable</b> <i class="material-icons right">done</i></a>
+    div(class="col s4")
+        div(id="landing")
+            img(id="landing_img" src="img/landing_img.png")

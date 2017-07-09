@@ -12,4 +12,10 @@ router.get('/login', function(req, res, next){
   });
 });
 
+router.get('/landing', function(req, res, next){
+  res.render('landing', {
+    title: 'UL Timetable'
+  });
+});
+
 module.exports = router;
