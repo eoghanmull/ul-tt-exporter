@@ -34,86 +34,109 @@ module.exports.getTimeTable = (req, res) => {
         if (err) {
             console.log(err);
         } else {
-            //HTML2JSON magic..
-            //moday first
-            //console.log(html2json(body).child[0].child[3].child[3].child[1].child[3].child[1].child);
             var monday = html2json(body).child[0].child[3].child[3].child[1].child[3].child[1].child;
-            var mondayData = [];
-            monday.forEach(function (element) {
-                if (element != undefined && element.hasOwnProperty('child')) {
-                    if (element.child[0].hasOwnProperty('child')) {
-                        if (element.child[0].child[0].hasOwnProperty('child')) {
-                            //console.log(element.child[0].child[0].child);
-                            var dayData = element.child[0].child[0].child;
-                            for (var obj in dayData) {
-                                if (dayData[obj].hasOwnProperty('text')) {
-                                    //console.log(dayData[obj].text);
-                                    mondayData.push(dayData[obj].text);
+            var tuesday = html2json(body).child[0].child[3].child[3].child[1].child[3].child[3].child;
+            var wednesday = html2json(body).child[0].child[3].child[3].child[1].child[3].child[5].child;
+            var thursday = html2json(body).child[0].child[3].child[3].child[1].child[3].child[7].child;
+            var friday = html2json(body).child[0].child[3].child[3].child[1].child[3].child[9].child;
+
+            var days = [];
+            days.push(monday);
+            days.push(tuesday);
+            days.push(wednesday);
+            days.push(thursday);
+            days.push(friday);
+
+            function buildTimeTableDay(day) {
+                var data = [];
+                day.forEach(function (element) {
+                    if (element != undefined && element.hasOwnProperty('child')) {
+                        if (element.child[0].hasOwnProperty('child')) {
+                            if (element.child[0].child[0].hasOwnProperty('child')) {
+                                //console.log(element.child[0].child[0].child);
+                                var dayData = element.child[0].child[0].child;
+                                for (var obj in dayData) {
+                                    if (dayData[obj].hasOwnProperty('text')) {
+                                        //console.log(dayData[obj].text);
+                                        data.push(dayData[obj].text);
+                                    }
                                 }
                             }
                         }
                     }
+                }, this);
+                var count = 0;
+                let timetableEntry = {
+                    start_time: null,
+                    end_time: null,
+                    module_code: null,
+                    class_type: null,
+                    room_code: null,
+                    runs_for: null
                 }
-            }, this);
-            console.log(mondayData);
 
-            console.log("\n\n\n")
+                for (var i = 0; i <= data.length; i++) {
+                    if (count == 7) {
+                        switch (day) {
+                            case monday:
+                                timeTable.monday.push(timetableEntry);
+                                break;
+                            case tuesday:
+                                timeTable.tuesday.push(timetableEntry);
+                                break;
+                            case wednesday:
+                                timeTable.wednesday.push(timetableEntry);
+                                break;
+                            case thursday:
+                                timeTable.thursday.push(timetableEntry);
+                                break;
+                            case friday:
+                                timeTable.friday.push(timetableEntry);
+                                break;
+                        }
 
-            var count = 0;
-            let timetableEntry = {
-                start_time: null,
-                end_time: null,
-                module_code: null,
-                class_type: null,
-                room_code: null,
-                runs_for: null
-            }
-
-            for (var i = 0; i < mondayData.length; i++) {
-                if (count == 7) {
-                    timeTable.monday.push(timetableEntry);
-                    timetableEntry = {
-                        start_time: null,
-                        end_time: null,
-                        module_code: null,
-                        class_type: null,
-                        room_code: null,
-                        runs_for: null
+                        timetableEntry = {
+                            start_time: null,
+                            end_time: null,
+                            module_code: null,
+                            class_type: null,
+                            room_code: null,
+                            runs_for: null
+                        }
+                        count = 0;
                     }
-                    // timetableEntry = timetablelib.refreshEntry(timetableEntry);
-                    // console.log(timetableEntry);
-                    count = 0;
+                    switch (count) {
+                        case 0:
+                            timetableEntry.start_time = data[i];
+                            break;
+                        case 1:
+                            timetableEntry.end_time = data[i];
+                            break;
+                        case 2:
+                            timetableEntry.module_code = data[i];
+                            break;
+                        case 3:
+                            timetableEntry.class_type = data[i];
+                            break;
+                        case 4:
+                            break;
+                        case 5:
+                            timetableEntry.room_code = data[i];
+                            break;
+                        case 6:
+                            timetableEntry.runs_for = data[i];
+                            break;
+                    }
+                    count++;
                 }
-                switch (count) {
-                    case 0:
-                        timetableEntry.start_time = mondayData[i];
-                        break;
-                    case 1:
-                        timetableEntry.end_time = mondayData[i];
-                        break;
-                    case 2:
-                        timetableEntry.module_code = mondayData[i];
-                        break;
-                    case 3:
-                        timetableEntry.class_type = mondayData[i];
-                        break;
-                    case 4:
-                        break;
-                    case 5:
-                        timetableEntry.room_code = mondayData[i];
-                        break;
-                    case 6:
-                        timetableEntry.runs_for = mondayData[i];
-                        break;
-                }
-                count++;
             }
 
-            console.log(timeTable);
 
+            for (var i in days) {
+                buildTimeTableDay(days[i]);
+            }
 
-            // MAGIC DO NOT TOUCH LOLOLOL.
-            var weekdays = html2json(body).child[0].child[3].child[3].child[1].child[3].child;
+            res.send(timeTable);
         }
     })
 }
